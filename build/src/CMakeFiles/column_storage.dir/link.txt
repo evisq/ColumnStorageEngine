@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcolumn_storage.a CMakeFiles/column_storage.dir/column/col_util.cpp.o CMakeFiles/column_storage.dir/reader/reader_CSV.cpp.o CMakeFiles/column_storage.dir/reader/parser.cpp.o CMakeFiles/column_storage.dir/reader/serialize.cpp.o
+/usr/bin/ranlib libcolumn_storage.a

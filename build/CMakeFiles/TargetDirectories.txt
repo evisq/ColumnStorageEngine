@@ -1,0 +1,8 @@
+/home/evisq/ColumnStorageEngine/build/CMakeFiles/edit_cache.dir
+/home/evisq/ColumnStorageEngine/build/CMakeFiles/rebuild_cache.dir
+/home/evisq/ColumnStorageEngine/build/src/CMakeFiles/column_storage.dir
+/home/evisq/ColumnStorageEngine/build/src/CMakeFiles/edit_cache.dir
+/home/evisq/ColumnStorageEngine/build/src/CMakeFiles/rebuild_cache.dir
+/home/evisq/ColumnStorageEngine/build/src/execute/CMakeFiles/hits_bench.dir
+/home/evisq/ColumnStorageEngine/build/src/execute/CMakeFiles/edit_cache.dir
+/home/evisq/ColumnStorageEngine/build/src/execute/CMakeFiles/rebuild_cache.dir
