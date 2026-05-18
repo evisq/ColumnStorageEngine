@@ -16,7 +16,6 @@
 #include "reader/reader_CSV.h"
 #include "reader/reader_ISQ.h"
 
-// Column indices in scheme.csv (0-based)
 static constexpr ui64 kEventDate       = 5;
 static constexpr ui64 kUserID          = 9;
 static constexpr ui64 kResolutionWidth = 20;
@@ -63,7 +62,6 @@ static void WriteResult(std::ostream& out, const ColPtr& col) {
 static void RunQuery(int query_num, const std::string& isq_path, std::ostream& out) {
     switch (query_num) {
         case 0: {
-            // SELECT COUNT(*) FROM hits
             ReaderISQ reader(isq_path, {0});
             auto cnt = std::make_shared<AggrCount>();
             Execute(reader, nullptr, {cnt}, {0});
@@ -72,7 +70,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 1: {
-            // SELECT COUNT(*) FROM hits WHERE AdvEngineID <> 0
             ReaderISQ reader(isq_path, {kAdvEngineID});
             auto filter = std::make_shared<BinExpr>(
                 std::make_shared<GetCol>(0),
@@ -85,7 +82,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 2: {
-            // SELECT SUM(AdvEngineID), COUNT(*), AVG(ResolutionWidth) FROM hits
             ReaderISQ reader(isq_path, {kAdvEngineID, kResolutionWidth});
             auto sum_adv = std::make_shared<AggrSum<i16>>();
             auto cnt     = std::make_shared<AggrCount>();
@@ -97,7 +93,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 3: {
-            // SELECT AVG(UserID) FROM hits
             ReaderISQ reader(isq_path, {kUserID});
             auto avg = std::make_shared<AggrAvg<i64>>();
             Execute(reader, nullptr, {avg}, {0});
@@ -106,7 +101,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 4: {
-            // SELECT COUNT(DISTINCT UserID) FROM hits
             ReaderISQ reader(isq_path, {kUserID});
             auto cnt_dist = std::make_shared<AggrCountDistinct<i64>>();
             Execute(reader, nullptr, {cnt_dist}, {0});
@@ -115,7 +109,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 5: {
-            // SELECT COUNT(DISTINCT SearchPhrase) FROM hits
             ReaderISQ reader(isq_path, {kSearchPhrase});
             auto cnt_dist = std::make_shared<AggrCountDistinctString>();
             Execute(reader, nullptr, {cnt_dist}, {0});
@@ -124,7 +117,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         case 6: {
-            // SELECT MIN(EventDate), MAX(EventDate) FROM hits
             ReaderISQ reader(isq_path, {kEventDate});
             auto mn = std::make_shared<AggrMin<ISQDate>>();
             auto mx = std::make_shared<AggrMax<ISQDate>>();
@@ -134,7 +126,6 @@ static void RunQuery(int query_num, const std::string& isq_path, std::ostream& o
             break;
         }
         default:
-            // Query not supported by this engine
             break;
     }
 }

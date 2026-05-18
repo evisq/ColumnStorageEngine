@@ -8,10 +8,6 @@
 #include "expr/expr.h"
 #include "reader/reader_ISQ.h"
 
-// Прогоняет все батчи через фильтр и агрегации.
-// filter  — выражение WHERE (nullptr = все строки)
-// aggs    — список агрегаций
-// agg_cols— индекс колонки батча для каждой агрегации
 inline void Execute(ReaderISQ& reader,
                     const ExprPtr& filter,
                     const std::vector<std::shared_ptr<Aggr>>& aggs,
