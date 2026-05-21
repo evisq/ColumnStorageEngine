@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "util/alias.h"
 
 enum class ColType : ui8 {
@@ -29,7 +30,7 @@ struct ISQDate {
 struct ISQDatetime {
     i16 year;
     i8 month, day, hour, minute, second;
-    
+
     auto operator<=>(const ISQDatetime&) const = default;
 };
 

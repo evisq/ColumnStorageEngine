@@ -50,7 +50,7 @@ public:
         }
     }
 
-    ReaderISQ(std::string_view path, std::vector<ui64> ind) {
+    ReaderISQ(std::string_view path, std::vector<ui64> indices) {
         file_ = std::ifstream(std::string(path), std::ios::binary);
         ASSERT_WITH_MESSAGE(file_.is_open(),
                             "ISQ file is not opening: " + std::string(path));
@@ -66,12 +66,12 @@ public:
         for (ui64 i = 0; i < batch_cnt; ++i) {
             batch_idx_offsets_[i] = Get<ui64>(file_);
         }
-        col_inds_ = ind;
+        col_inds_ = indices;
 
-        scheme_.resize(ind.size());
+        scheme_.resize(indices.size());
         ui64 pos = static_cast<ui64>(file_.tellg());
-        for (ui64 i = 0; i < ind.size(); ++i) {
-            file_.seekg(pos + ind[i]);
+        for (ui64 i = 0; i < indices.size(); ++i) {
+            file_.seekg(pos + indices[i]);
             scheme_[i].type = Get<ColType>(file_);
         }
         file_.seekg(pos + cnt_cols_);
@@ -81,15 +81,19 @@ public:
             offset[i] = Get<ui64>(file_);
         }
         pos = static_cast<ui64>(file_.tellg());
-        for (ui64 i = 0; i < ind.size(); ++i) {
-            const size_t str_size = offset[ind[i] + 1] - offset[ind[i]];
-            file_.seekg(pos + offset[ind[i]]);
+        for (ui64 i = 0; i < indices.size(); ++i) {
+            const size_t str_size = offset[indices[i] + 1] - offset[indices[i]];
+            file_.seekg(pos + offset[indices[i]]);
             scheme_[i].name.resize(str_size);
             file_.read(scheme_[i].name.data(), str_size);
         }
     }
 
     ~ReaderISQ() = default;
+    ReaderISQ(const ReaderISQ&) = delete;
+    ReaderISQ(ReaderISQ&&) = default;
+    ReaderISQ& operator=(const ReaderISQ&) = delete;
+    ReaderISQ& operator=(ReaderISQ&&) = default;
 
     bool HasNext() const { return batch_id_ < batch_idx_offsets_.size(); }
 
@@ -112,7 +116,7 @@ public:
             table_.push_back(DeserializeColumn(buf.data(), buf.size(),
                                                scheme_[i].type, cnt_rows));
         }
-        return {std::move(table_), cnt_rows};
+        return Batch(std::move(table_), cnt_rows);
     }
 
     void Reset() { batch_id_ = 0; }

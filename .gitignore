@@ -1,2 +1,5 @@
+build/
+.cache/
+.VSCodeCounter/
 *.csv
 *.isq

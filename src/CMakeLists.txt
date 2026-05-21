@@ -2,6 +2,7 @@
 # INTERFACE нельзя — оно не компилирует .cpp, только пробрасывает их потребителям.
 add_library(column_storage STATIC
     column/col_util.cpp
+    column/batch.cpp
     reader/reader_CSV.cpp
     reader/parser.cpp
     reader/serialize.cpp

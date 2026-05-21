@@ -1,7 +1,5 @@
 #!/bin/bash
 set -e
 
-mkdir -p build
-cd build
-cmake ..
-cmake --build . -j$(nproc)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)

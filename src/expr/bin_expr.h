@@ -1,17 +1,18 @@
 #pragma once
 
 #include <memory>
+
+#include "arithm_op.h"
+#include "cmp_op.h"
 #include "column/column.h"
 #include "column/column_int_dt.h"
 #include "column/deserialize.h"
 #include "expr.h"
 #include "util/assert.h"
-#include "cmp_op.h"
-#include "arithm_op.h"
 
 class BinExpr : public Expr {
 public:
-    BinExpr(ExprPtr left, ExprPtr right, Op op)
+    BinExpr(ExprPtr left, ExprPtr right, kOp op)
         : left_(left), right_(right), op_(op) {}
 
     virtual ColPtr Eval(const Batch& batch) const override {
@@ -28,7 +29,7 @@ public:
                 static_cast<Column<ui8>*>(right_col.get())->Data();
             std::vector<ui8> res(lc8.size());
             for (ui64 i = 0; i < lc8.size(); ++i) {
-                res[i] = (op_ == Op::kAnd ? lc8[i] & rc8[i] : lc8[i] | rc8[i]);
+                res[i] = (op_ == kOp::kAnd ? lc8[i] & rc8[i] : lc8[i] | rc8[i]);
             }
             return std::make_shared<Column<ui8>>(std::move(res));
         }
@@ -41,5 +42,5 @@ public:
 private:
     ExprPtr left_;
     ExprPtr right_;
-    Op op_;
+    kOp op_;
 };

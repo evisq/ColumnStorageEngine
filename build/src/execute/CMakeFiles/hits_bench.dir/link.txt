@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/hits_bench.dir/main.cpp.o -o hits_bench  ../libcolumn_storage.a 

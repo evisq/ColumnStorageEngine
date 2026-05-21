@@ -10,9 +10,17 @@ public:
         }
     }
 
-    ColPtr Result() override {
-        return std::make_shared<Column<i64>>(std::vector<i64>{static_cast<i64>(count_)});
+    void UpdateRow(ColPtr, ui64) override { ++count_; }
+
+    std::shared_ptr<Aggr> Clone() const override {
+        return std::make_shared<AggrCount>();
     }
+
+    ColPtr Result() override {
+        return std::make_shared<Column<i64>>(
+            std::vector<i64>{static_cast<i64>(count_)});
+    }
+
 private:
     ui64 count_ = 0;
 };

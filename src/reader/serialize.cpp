@@ -15,7 +15,7 @@ std::vector<char> SerializeColumn(const VString &vals, ColType type) {
             std::vector<char> out(n * sizeof(ISQDate));
             for (size_t i = 0; i < n; i++) {
                 ISQDate date{};
-                const auto &s = vals[i];
+                const std::string &s = vals[i];
                 if (s.size() >= 10) {
                     std::from_chars(s.data(), s.data() + 4, date.year);
                     std::from_chars(s.data() + 5, s.data() + 7, date.month);
@@ -30,7 +30,7 @@ std::vector<char> SerializeColumn(const VString &vals, ColType type) {
             std::vector<char> out(n * sizeof(ISQDatetime));
             for (size_t i = 0; i < n; i++) {
                 ISQDatetime datetime{};
-                const auto &s = vals[i];
+                const std::string &s = vals[i];
                 if (s.size() >= 10) {
                     std::from_chars(s.data(), s.data() + 4, datetime.year);
                     std::from_chars(s.data() + 5, s.data() + 7, datetime.month);

@@ -15,9 +15,19 @@ public:
             if (mask.At(i)) seen_.insert(c->At(i));
     }
 
-    ColPtr Result() override {
-        return std::make_shared<Column<i64>>(std::vector<i64>{static_cast<i64>(seen_.size())});
+    void UpdateRow(ColPtr col, ui64 row) override {
+        seen_.insert(static_cast<const Column<T>*>(col.get())->At(row));
     }
+
+    std::shared_ptr<Aggr> Clone() const override {
+        return std::make_shared<AggrCountDistinct<T>>();
+    }
+
+    ColPtr Result() override {
+        return std::make_shared<Column<i64>>(
+            std::vector<i64>{static_cast<i64>(seen_.size())});
+    }
+
 private:
     std::unordered_set<T> seen_;
 };
@@ -30,9 +40,21 @@ public:
             if (mask.At(i)) seen_.emplace(c->At(i));
     }
 
-    ColPtr Result() override {
-        return std::make_shared<Column<i64>>(std::vector<i64>{static_cast<i64>(seen_.size())});
+    void UpdateRow(ColPtr col, ui64 row) override {
+        std::string_view sv =
+            static_cast<const ColumnString*>(col.get())->At(row);
+        seen_.emplace(sv);
     }
+
+    std::shared_ptr<Aggr> Clone() const override {
+        return std::make_shared<AggrCountDistinctString>();
+    }
+
+    ColPtr Result() override {
+        return std::make_shared<Column<i64>>(
+            std::vector<i64>{static_cast<i64>(seen_.size())});
+    }
+
 private:
     std::unordered_set<std::string> seen_;
 };

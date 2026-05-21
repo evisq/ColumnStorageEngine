@@ -69,7 +69,7 @@ void ReaderCSV(std::string_view data_path, std::string_view scheme_path,
     Put(out, kDefaultBatchSize);
     for (ui64 pos : batch_idx_offsets) Put(out, pos);
 
-    for (const auto &col_elem : scheme) {
+    for (const ColScheme &col_elem : scheme) {
         Put(out, static_cast<ui8>(col_elem.type));
     }
     std::vector<char> col_names;

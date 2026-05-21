@@ -3,7 +3,7 @@
 
 struct ArithmOp {
     template <typename T>
-    static ColPtr Exec(const Column<T>& left, const ColPtr& right, Op op) {
+    static ColPtr Exec(const Column<T>& left, const ColPtr& right, kOp op) {
         if constexpr (!std::is_arithmetic_v<T>) {
             SEND_MESSAGE("Date/Datetime arithmetic operation is not supported");
         } else {
@@ -11,16 +11,16 @@ struct ArithmOp {
             std::vector<T> result(left.Size());
             for (ui64 i = 0; i < left.Size(); ++i) {
                 switch (op) {
-                    case Op::kAdd:
+                    case kOp::kAdd:
                         result[i] = left.At(i) + r->At(i);
                         break;
-                    case Op::kSub:
+                    case kOp::kSub:
                         result[i] = left.At(i) - r->At(i);
                         break;
-                    case Op::kMul:
+                    case kOp::kMul:
                         result[i] = left.At(i) * r->At(i);
                         break;
-                    case Op::kDiv:
+                    case kOp::kDiv:
                         result[i] = left.At(i) / r->At(i);
                         break;
                     default:
@@ -31,7 +31,7 @@ struct ArithmOp {
         }
     }
 
-    static ColPtr Exec(const ColumnString&, const ColPtr&, Op) {
+    static ColPtr Exec(const ColumnString&, const ColPtr&, kOp) {
         SEND_MESSAGE("String arithmetic operation is not supported");
     }
 };

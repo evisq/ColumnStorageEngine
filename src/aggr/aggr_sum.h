@@ -12,9 +12,19 @@ public:
         }
     }
 
-    ColPtr Result() override {
-        return std::make_shared<Column<i64>>(std::vector<i64>{static_cast<i64>(sum_)});
+    void UpdateRow(ColPtr col, ui64 row) override {
+        sum_ += static_cast<const Column<T>*>(col.get())->At(row);
     }
+
+    std::shared_ptr<Aggr> Clone() const override {
+        return std::make_shared<AggrSum<T>>();
+    }
+
+    ColPtr Result() override {
+        return std::make_shared<Column<i64>>(
+            std::vector<i64>{static_cast<i64>(sum_)});
+    }
+
 private:
     i64 sum_ = 0;
 };
