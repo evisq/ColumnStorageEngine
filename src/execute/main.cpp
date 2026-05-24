@@ -978,6 +978,7 @@ static void RunQuery(int query_num, const std::string& isq_path,
         }
         // case 42: DATE_FORMAT — skipped
         default:
+            std::cerr << "Query " << query_num << " is not implemented\n";
             break;
     }
 }

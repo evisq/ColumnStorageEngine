@@ -2,4 +2,7 @@
 set -e
 
 apt-get update -qq
-apt-get install -y --no-install-recommends cmake g++ libgtest-dev
+apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    ca-certificates
