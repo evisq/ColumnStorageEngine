@@ -3,6 +3,7 @@
 #include <string>
 
 #include "util/alias.h"
+#include "util/assert.h"
 
 enum class ColType : ui8 {
     kInt8 = 1,
@@ -19,19 +20,49 @@ struct ColScheme {
     ColType type;
 };
 
-struct ISQDate {
+struct IsqDate {
     i16 year;
     i8 month;
     i8 day;
 
-    auto operator<=>(const ISQDate&) const = default;
+    i16 operator[](ui8 ind) const {
+        switch (ind) {
+            case 0:
+                return year;
+            case 1:
+                return static_cast<i16>(month);
+            case 2:
+                return static_cast<i16>(day);
+        }
+        SEND_MESSAGE("There are not that many numbers in the Date");
+    }
+
+    auto operator<=>(const IsqDate&) const = default;
 };
 
-struct ISQDatetime {
+struct IsqDatetime {
     i16 year;
     i8 month, day, hour, minute, second;
 
-    auto operator<=>(const ISQDatetime&) const = default;
+    i16 operator[](ui8 ind) const {
+        switch (ind) {
+            case 0:
+                return year;
+            case 1:
+                return static_cast<i16>(month);
+            case 2:
+                return static_cast<i16>(day);
+            case 3:
+                return static_cast<i16>(hour);
+            case 4:
+                return static_cast<i16>(minute);
+            case 5:
+                return static_cast<i16>(second);
+        }
+        SEND_MESSAGE("There are not that many numbers in the Datetime");
+    }
+
+    auto operator<=>(const IsqDatetime&) const = default;
 };
 
 ColType StrToColType(std::string_view s);

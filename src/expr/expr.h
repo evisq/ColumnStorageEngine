@@ -6,9 +6,11 @@
 #include <vector>
 
 #include "column/batch.h"
+#include "column/col_util.h"
 #include "column/column_int_dt.h"
 #include "column/column_string.h"
 #include "util/alias.h"
+#include "util/assert.h"
 
 enum class kOp : ui8 {
     kLs = 0,
@@ -44,9 +46,9 @@ private:
 };
 
 template <typename T>
-class СonstVal : public Expr {
+class ConstVal : public Expr {
 public:
-    explicit СonstVal(T val) : val_(val) {}
+    explicit ConstVal(T val) : val_(val) {}
 
     ColPtr Eval(const Batch& batch) const override {
         return std::make_shared<Column<T>>(
@@ -59,42 +61,56 @@ private:
 
 class ConstValString : public Expr {
 public:
-    explicit ConstValString(std::string val) : val_(std::move(val)) {}
+    explicit ConstValString(std::string&& val) : val_(std::move(val)) {}
 
     ColPtr Eval(const Batch& batch) const override {
         const ui64 n = batch.CntRows();
         std::vector<char> data;
         data.reserve(n * val_.size());
-        std::vector<ui64> offsets;
-        offsets.reserve(n + 1);
-        offsets.push_back(0);
+        std::vector<ui64> offsets(n + 1);
         for (ui64 i = 0; i < n; ++i) {
             data.insert(data.end(), val_.begin(), val_.end());
-            offsets.push_back(data.size());
+            offsets[i + 1] = data.size();
         }
-        return std::make_shared<ColumnString>(std::move(data), std::move(offsets));
+        return std::make_shared<ColumnString>(std::move(data),
+                                              std::move(offsets));
     }
 
 private:
     std::string val_;
 };
 
-class ExtractMinuteExpr : public Expr {
+class ExtractExpr : public Expr {
 public:
-    explicit ExtractMinuteExpr(ExprPtr col_expr) : col_expr_(std::move(col_expr)) {}
+    explicit ExtractExpr(ExprPtr col_expr, ui8 ind)
+        : col_expr_(std::move(col_expr)), ind_(ind) {}
 
     ColPtr Eval(const Batch& batch) const override {
         ColPtr col = col_expr_->Eval(batch);
-        const Column<ISQDatetime>* c = static_cast<const Column<ISQDatetime>*>(col.get());
-        std::vector<i16> result;
-        result.reserve(batch.CntRows());
-        for (ui64 i = 0; i < batch.CntRows(); ++i)
-            result.push_back(static_cast<i16>(c->At(i).minute));
-        return std::make_shared<Column<i16>>(std::move(result));
+        if (col->GetType() == ColType::kDate) {
+            const Column<IsqDate>* col_date =
+                static_cast<const Column<IsqDate>*>(col.get());
+            std::vector<i16> result(batch.CntRows());
+            for (ui64 i = 0; i < batch.CntRows(); ++i) {
+                result[i] = col_date->At(i)[ind_];
+            }
+            return std::make_shared<Column<i16>>(std::move(result));
+        } else if (col->GetType() == ColType::kDatetime) {
+            const Column<IsqDatetime>* col_date =
+                static_cast<const Column<IsqDatetime>*>(col.get());
+            std::vector<i16> result(batch.CntRows());
+            for (ui64 i = 0; i < batch.CntRows(); ++i) {
+                result[i] = col_date->At(i)[ind_];
+            }
+            return std::make_shared<Column<i16>>(std::move(result));
+        }
+        SEND_MESSAGE(
+            "This expression is not supported with this type of column");
     }
 
 private:
     ExprPtr col_expr_;
+    ui8 ind_;
 };
 
 class LengthExpr : public Expr {
@@ -103,11 +119,12 @@ public:
 
     ColPtr Eval(const Batch& batch) const override {
         ColPtr col = col_expr_->Eval(batch);
-        const ColumnString* c = static_cast<const ColumnString*>(col.get());
-        std::vector<i64> result;
-        result.reserve(batch.CntRows());
-        for (ui64 i = 0; i < batch.CntRows(); ++i)
-            result.push_back(static_cast<i64>(c->At(i).size()));
+        const ColumnString* col_str =
+            static_cast<const ColumnString*>(col.get());
+        std::vector<i64> result(batch.CntRows());
+        for (ui64 i = 0; i < batch.CntRows(); ++i) {
+            result[i] = static_cast<i64>(col_str->At(i).size());
+        }
         return std::make_shared<Column<i64>>(std::move(result));
     }
 

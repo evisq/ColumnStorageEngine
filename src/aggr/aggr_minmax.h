@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "aggr.h"
+#include "aggr/aggr.h"
 #include "column/column_string.h"
 
 template <typename T>
@@ -79,15 +79,24 @@ public:
     void Update(const ColPtr& col, const Column<ui8>& mask) override {
         const ColumnString* c = static_cast<const ColumnString*>(col.get());
         for (ui64 i = 0; i < mask.Size(); ++i) {
-            if (!mask.At(i)) continue;
+            if (!mask.At(i)) {
+                continue;
+            }
             std::string_view sv = c->At(i);
-            if (first_ || sv < min_) { min_ = sv; first_ = false; }
+            if (first_ || sv < min_) {
+                min_ = sv;
+                first_ = false;
+            }
         }
     }
 
     void UpdateRow(ColPtr col, ui64 row) override {
-        std::string_view sv = static_cast<const ColumnString*>(col.get())->At(row);
-        if (first_ || sv < min_) { min_ = sv; first_ = false; }
+        std::string_view sv =
+            static_cast<const ColumnString*>(col.get())->At(row);
+        if (first_ || sv < min_) {
+            min_ = sv;
+            first_ = false;
+        }
     }
 
     std::shared_ptr<Aggr> Clone() const override {
@@ -97,7 +106,8 @@ public:
     ColPtr Result() override {
         std::vector<char> data(min_.begin(), min_.end());
         std::vector<ui64> offsets = {0, min_.size()};
-        return std::make_shared<ColumnString>(std::move(data), std::move(offsets));
+        return std::make_shared<ColumnString>(std::move(data),
+                                              std::move(offsets));
     }
 
 private:
@@ -110,15 +120,24 @@ public:
     void Update(const ColPtr& col, const Column<ui8>& mask) override {
         const ColumnString* c = static_cast<const ColumnString*>(col.get());
         for (ui64 i = 0; i < mask.Size(); ++i) {
-            if (!mask.At(i)) continue;
+            if (!mask.At(i)) {
+                continue;
+            }
             std::string_view sv = c->At(i);
-            if (first_ || sv > max_) { max_ = sv; first_ = false; }
+            if (first_ || sv > max_) {
+                max_ = sv;
+                first_ = false;
+            }
         }
     }
 
     void UpdateRow(ColPtr col, ui64 row) override {
-        std::string_view sv = static_cast<const ColumnString*>(col.get())->At(row);
-        if (first_ || sv > max_) { max_ = sv; first_ = false; }
+        std::string_view sv =
+            static_cast<const ColumnString*>(col.get())->At(row);
+        if (first_ || sv > max_) {
+            max_ = sv;
+            first_ = false;
+        }
     }
 
     std::shared_ptr<Aggr> Clone() const override {
@@ -128,7 +147,8 @@ public:
     ColPtr Result() override {
         std::vector<char> data(max_.begin(), max_.end());
         std::vector<ui64> offsets = {0, max_.size()};
-        return std::make_shared<ColumnString>(std::move(data), std::move(offsets));
+        return std::make_shared<ColumnString>(std::move(data),
+                                              std::move(offsets));
     }
 
 private:

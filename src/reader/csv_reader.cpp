@@ -1,13 +1,12 @@
-#include "reader_CSV.h"
+#include "reader/csv_reader.h"
 
-#include <cstring>
 #include <fstream>
 #include <ios>
 #include <string>
 #include <vector>
 
-#include "parser.h"
-#include "serialize.h"
+#include "reader/parser.h"
+#include "reader/serialize.h"
 #include "util/assert.h"
 #include "util/stream.h"
 
@@ -27,8 +26,8 @@ ui64 BatchFlush(std::vector<VString> &col_bufs, std::vector<ColScheme> &scheme,
     return result;
 }
 
-void ReaderCSV(std::string_view data_path, std::string_view scheme_path,
-               std::string_view isq_path) {
+void ConvertCsvToIsq(std::string_view data_path, std::string_view scheme_path,
+                     std::string_view isq_path) {
     std::vector<ColScheme> scheme = ParseScheme(scheme_path);
     const ui64 cnt_cols = static_cast<ui64>(scheme.size());
     std::ifstream data((std::string(data_path)));
@@ -47,9 +46,15 @@ void ReaderCSV(std::string_view data_path, std::string_view scheme_path,
     ui64 rows_in_batch = 0;
     while (data.good()) {
         GetLineVString(row, data);
-        if (row.empty()) continue;
-        if (row.size() != cnt_cols) continue;
-        for (ui64 j = 0; j < cnt_cols; j++) col_bufs[j].push_back(row[j]);
+        if (row.empty()) {
+            continue;
+        }
+        if (row.size() != cnt_cols) {
+            continue;
+        }
+        for (ui64 j = 0; j < cnt_cols; j++) {
+            col_bufs[j].push_back(row[j]);
+        }
         if (++rows_in_batch == kDefaultBatchSize) {
             batch_idx_offsets.push_back(
                 BatchFlush(col_bufs, scheme, col_starts, out, cnt_cols));
@@ -67,7 +72,9 @@ void ReaderCSV(std::string_view data_path, std::string_view scheme_path,
     Put(out, static_cast<ui64>(batch_idx_offsets.size()));
     Put(out, cnt_cols);
     Put(out, kDefaultBatchSize);
-    for (ui64 pos : batch_idx_offsets) Put(out, pos);
+    for (ui64 pos : batch_idx_offsets) {
+        Put(out, pos);
+    }
 
     for (const ColScheme &col_elem : scheme) {
         Put(out, static_cast<ui8>(col_elem.type));

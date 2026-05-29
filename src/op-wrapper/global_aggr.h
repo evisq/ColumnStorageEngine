@@ -6,12 +6,12 @@
 #include "column/batch.h"
 #include "column/column_int_dt.h"
 #include "expr/expr.h"
-#include "op.h"
+#include "op-wrapper/op.h"
 
 class GlobalAggrOp : public Op {
 public:
-    GlobalAggrOp(OpPtr op, std::vector<std::shared_ptr<Aggr>> aggrs,
-                 std::vector<ExprPtr> agg_exprs)
+    GlobalAggrOp(OpPtr op, std::vector<std::shared_ptr<Aggr>>&& aggrs,
+                 std::vector<ExprPtr>&& agg_exprs)
         : op_(std::move(op)),
           aggrs_(std::move(aggrs)),
           agg_exprs_(std::move(agg_exprs)) {}

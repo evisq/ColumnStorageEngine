@@ -1,4 +1,4 @@
-#include "serialize.h"
+#include "reader/serialize.h"
 
 std::vector<char> SerializeColumn(const VString &vals, ColType type) {
     const size_t n = vals.size();
@@ -12,24 +12,24 @@ std::vector<char> SerializeColumn(const VString &vals, ColType type) {
         case ColType::kInt64:
             return SerializeInts<i64>(vals);
         case ColType::kDate: {
-            std::vector<char> out(n * sizeof(ISQDate));
+            std::vector<char> out(n * sizeof(IsqDate));
             for (size_t i = 0; i < n; i++) {
-                ISQDate date{};
+                IsqDate date{};
                 const std::string &s = vals[i];
                 if (s.size() >= 10) {
                     std::from_chars(s.data(), s.data() + 4, date.year);
                     std::from_chars(s.data() + 5, s.data() + 7, date.month);
                     std::from_chars(s.data() + 8, s.data() + 10, date.day);
                 }
-                std::memcpy(out.data() + i * sizeof(ISQDate), &date,
-                            sizeof(ISQDate));
+                std::memcpy(out.data() + i * sizeof(IsqDate), &date,
+                            sizeof(IsqDate));
             }
             return out;
         }
         case ColType::kDatetime: {
-            std::vector<char> out(n * sizeof(ISQDatetime));
+            std::vector<char> out(n * sizeof(IsqDatetime));
             for (size_t i = 0; i < n; i++) {
-                ISQDatetime datetime{};
+                IsqDatetime datetime{};
                 const std::string &s = vals[i];
                 if (s.size() >= 10) {
                     std::from_chars(s.data(), s.data() + 4, datetime.year);
@@ -44,8 +44,8 @@ std::vector<char> SerializeColumn(const VString &vals, ColType type) {
                     std::from_chars(s.data() + 17, s.data() + 19,
                                     datetime.second);
                 }
-                std::memcpy(out.data() + i * sizeof(ISQDatetime), &datetime,
-                            sizeof(ISQDatetime));
+                std::memcpy(out.data() + i * sizeof(IsqDatetime), &datetime,
+                            sizeof(IsqDatetime));
             }
             return out;
         }

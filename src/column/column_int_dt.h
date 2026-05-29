@@ -51,10 +51,10 @@ inline ColType Column<i64>::GetType() const {
     return ColType::kInt64;
 }
 template <>
-inline ColType Column<ISQDate>::GetType() const {
+inline ColType Column<IsqDate>::GetType() const {
     return ColType::kDate;
 }
 template <>
-inline ColType Column<ISQDatetime>::GetType() const {
+inline ColType Column<IsqDatetime>::GetType() const {
     return ColType::kDatetime;
 }

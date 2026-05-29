@@ -2,24 +2,24 @@
 
 #include <memory>
 
-#include "arithm_op.h"
-#include "cmp_op.h"
 #include "column/column.h"
 #include "column/column_int_dt.h"
 #include "column/deserialize.h"
-#include "expr.h"
+#include "expr/arithm_op.h"
+#include "expr/cmp_op.h"
+#include "expr/expr.h"
 #include "util/assert.h"
 
 class BinExpr : public Expr {
 public:
     BinExpr(ExprPtr left, ExprPtr right, kOp op)
-        : left_(left), right_(right), op_(op) {}
+        : left_(std::move(left)), right_(std::move(right)), op_(op) {}
 
     virtual ColPtr Eval(const Batch& batch) const override {
         ColPtr left_col = left_->Eval(batch);
         ColPtr right_col = right_->Eval(batch);
         ui8 num_op = static_cast<ui8>(op_);
-        if (0 < num_op && num_op < 6) {
+        if (num_op < 6) {
             return Dispatch<CmpOp>(left_col, right_col, op_);
         }
         if (num_op < 8) {

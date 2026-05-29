@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aggr.h"
+#include "aggr/aggr.h"
 
 template <typename T>
 class AggrSum : public Aggr {

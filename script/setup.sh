@@ -5,4 +5,5 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
-    ca-certificates
+    ca-certificates \
+    libboost-dev

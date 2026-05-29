@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "reader/parser.h"
 
 #include <fstream>
 
@@ -7,8 +7,12 @@
 void GetLineVString(VString &vec, std::ifstream &file) {
     vec.clear();
     std::string line;
-    if (!std::getline(file, line)) return;
-    if (!line.empty() && line.back() == '\r') line.pop_back();
+    if (!std::getline(file, line)) {
+        return;
+    }
+    if (!line.empty() && line.back() == '\r') {
+        line.pop_back();
+    }
 
     vec.push_back("");
     int in_quotes = 0;
@@ -29,7 +33,9 @@ void GetLineVString(VString &vec, std::ifstream &file) {
         if ((in_quotes % 2 == 0) || !std::getline(file, line)) {
             break;
         }
-        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
         vec.back().push_back('\n');
     }
 }
@@ -42,7 +48,9 @@ std::vector<ColScheme> ParseScheme(std::string_view path) {
     VString row;
     while (f.good()) {
         GetLineVString(row, f);
-        if (row.size() < 2 || row[0].empty()) continue;
+        if (row.size() < 2 || row[0].empty()) {
+            continue;
+        }
         scheme.push_back({row[0], StrToColType(row[1])});
     }
     return scheme;

@@ -1,21 +1,19 @@
 #pragma once
 
-#include <cstring>
 #include <fstream>
 #include <numeric>
 #include <vector>
 
 #include "column/batch.h"
 #include "column/col_util.h"
-#include "column/column.h"
 #include "column/deserialize.h"
 #include "util/alias.h"
 #include "util/assert.h"
 #include "util/stream.h"
 
-class ReaderISQ {
+class IsqReader {
 public:
-    explicit ReaderISQ(std::string_view path) {
+    explicit IsqReader(std::string_view path) {
         file_ = std::ifstream(std::string(path), std::ios::binary);
         ASSERT_WITH_MESSAGE(file_.is_open(),
                             "ISQ file is not opening: " + std::string(path));
@@ -50,7 +48,7 @@ public:
         }
     }
 
-    ReaderISQ(std::string_view path, std::vector<ui64> indices) {
+    IsqReader(std::string_view path, std::vector<ui64> indices) {
         file_ = std::ifstream(std::string(path), std::ios::binary);
         ASSERT_WITH_MESSAGE(file_.is_open(),
                             "ISQ file is not opening: " + std::string(path));
@@ -89,11 +87,11 @@ public:
         }
     }
 
-    ~ReaderISQ() = default;
-    ReaderISQ(const ReaderISQ&) = delete;
-    ReaderISQ(ReaderISQ&&) = default;
-    ReaderISQ& operator=(const ReaderISQ&) = delete;
-    ReaderISQ& operator=(ReaderISQ&&) = default;
+    ~IsqReader() = default;
+    IsqReader(const IsqReader&) = delete;
+    IsqReader(IsqReader&&) = default;
+    IsqReader& operator=(const IsqReader&) = delete;
+    IsqReader& operator=(IsqReader&&) = default;
 
     bool HasNext() const { return batch_id_ < batch_idx_offsets_.size(); }
 

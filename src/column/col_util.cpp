@@ -1,6 +1,4 @@
-#include "col_util.h"
-
-#include "util/assert.h"
+#include "column/col_util.h"
 
 ColType StrToColType(std::string_view s) {
     if (s == "int8") return ColType::kInt8;

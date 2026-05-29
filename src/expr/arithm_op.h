@@ -1,5 +1,7 @@
+#include <type_traits>
+
 #include "column/column_string.h"
-#include "expr.h"
+#include "expr/expr.h"
 
 struct ArithmOp {
     template <typename T>
@@ -8,26 +10,28 @@ struct ArithmOp {
             SEND_MESSAGE("Date/Datetime arithmetic operation is not supported");
         } else {
             const Column<T>* r = static_cast<const Column<T>*>(right.get());
-            std::vector<T> result(left.Size());
+            std::vector<i64> result(left.Size());
             for (ui64 i = 0; i < left.Size(); ++i) {
+                i64 li = static_cast<i64>(left.At(i));
+                i64 ri = static_cast<i64>(r->At(i));
                 switch (op) {
                     case kOp::kAdd:
-                        result[i] = left.At(i) + r->At(i);
+                        result[i] = li + ri;
                         break;
                     case kOp::kSub:
-                        result[i] = left.At(i) - r->At(i);
+                        result[i] = li - ri;
                         break;
                     case kOp::kMul:
-                        result[i] = left.At(i) * r->At(i);
+                        result[i] = li * ri;
                         break;
                     case kOp::kDiv:
-                        result[i] = left.At(i) / r->At(i);
+                        result[i] = li / ri;
                         break;
                     default:
                         SEND_MESSAGE("It's not an arithmetic operation");
                 }
             }
-            return std::make_shared<Column<T>>(std::move(result));
+            return std::make_shared<Column<i64>>(std::move(result));
         }
     }
 

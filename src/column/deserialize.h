@@ -15,9 +15,9 @@ inline ColPtr DeserializeColumn(const char *src, ui64 byte_size, ColType type,
         case ColType::kInt64:
             return Column<i64>::FromBytes(src, cnt_rows);
         case ColType::kDate:
-            return Column<ISQDate>::FromBytes(src, cnt_rows);
+            return Column<IsqDate>::FromBytes(src, cnt_rows);
         case ColType::kDatetime:
-            return Column<ISQDatetime>::FromBytes(src, cnt_rows);
+            return Column<IsqDatetime>::FromBytes(src, cnt_rows);
         case ColType::kString:
             return ColumnString::FromBytes(src, byte_size, cnt_rows);
     }
@@ -40,10 +40,10 @@ auto Dispatch(const ColPtr &col, Args &&...args) {
             return Op::Exec(*static_cast<Column<i64> *>(col.get()),
                             std::forward<Args>(args)...);
         case ColType::kDate:
-            return Op::Exec(*static_cast<Column<ISQDate> *>(col.get()),
+            return Op::Exec(*static_cast<Column<IsqDate> *>(col.get()),
                             std::forward<Args>(args)...);
         case ColType::kDatetime:
-            return Op::Exec(*static_cast<Column<ISQDatetime> *>(col.get()),
+            return Op::Exec(*static_cast<Column<IsqDatetime> *>(col.get()),
                             std::forward<Args>(args)...);
         case ColType::kString:
             return Op::Exec(*static_cast<ColumnString *>(col.get()),

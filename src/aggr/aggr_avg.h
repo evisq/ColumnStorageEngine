@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aggr.h"
+#include "aggr/aggr.h"
 
 template <typename T>
 class AggrAvg : public Aggr {
@@ -25,6 +25,9 @@ public:
     }
 
     ColPtr Result() override {
+        if (!count_) {
+            return std::make_shared<Column<i64>>(std::vector<i64>{0});
+        }
         return std::make_shared<Column<i64>>(
             std::vector<i64>{static_cast<i64>(sum_ / count_)});
     }
